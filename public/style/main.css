@@ -1,0 +1,45 @@
+@import url(https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css);
+
+.carts{
+    transition-duration: 0.3s;
+    cursor: pointer;
+    position: relative;
+}
+
+.carts:hover{
+    transform: rotate(0) perspective(90rem) rotateY(30deg);
+}
+
+.loader{
+    position: relative;
+    top: 30px;
+}
+
+.card{
+    cursor: pointer;
+    transition-duration: 0.2s;
+}
+
+
+.card:hover{
+    transform: rotate(0) perspective(90rem) rotateX(-20deg) rotateY(30deg);
+}
+.card *{
+    transition-duration: 0.5s;
+}
+.card *:hover{
+    transform: perspective(80rem) translate(0) translateX(20px);
+}
+
+
+.logo-animate{
+    transition-duration: 0.5s;
+    border-bottom: 100%;
+    width: 100px;
+}
+.flex{
+    display: flex;
+}
+.logo-animate:hover{
+    filter: drop-shadow(2px 2px 20px blue);
+}
