@@ -21,7 +21,7 @@ const page = () => {
                             
                               
                                 const clientId = await GetGOOGLE_ID()
-                                const redirectUri = "https://www.steamly-nine.vercel.app/api/auth/callback";
+                                const redirectUri = "https://steamly-nine.vercel.app/api/auth/callback";
                                 const scope = "email profile openid";
                                 const state = "random_csrf_token"; // optional but recommended
                                 const url = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=${scope}&access_type=offline&state=${state}&prompt=consent`;
