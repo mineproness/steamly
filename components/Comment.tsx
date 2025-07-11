@@ -1,50 +1,76 @@
-// "use server"
-import { finduser, removecomment } from '@/app/action'
-import React, { useEffect, useState } from 'react'
-// import Load from './Load'
-import cookie from 'js-cookie'
-import LoadingOPT from './LoadingOPT'
-const Comment = ({ comment, setloading , id }) => {
-  //   const user = await finduser(Number(comment.user))
-  //   const [loading, setloading] = useState(true)
-  const [data, setdata] = useState(null)
+"use client"
+import { DeleteComment } from '@/app/server'
+import { useRouter } from 'next/navigation'
+import React, { useState } from 'react'
+
+const Comment = ({ e, session,  Update, f , rerender , setcommet , comment }: any) => {
+  const router = useRouter()
   const [options, setoptions] = useState(false)
-  const [Load, setLoad] = useState(false)
+  // console.log(e);
+  
   return (
     <>
+      <div className="border border-gray-700 w-full px-7 p rounded-md my-2">
+        <div className="flex justify-end items-end text-end flex-col relative h-[30px]">
+          {session ?
+             f.author.username == session.username ?
+             <>
+               <button className='text-xl cursor-pointer' onClick={()=> setoptions((pre)=> !pre)} >•••</button>
+                {options ?
+                <div className="my-6 bg-gray-600 absolute rounded-md">
+                  <button onClick={async ()=>{
+                    const filted = comment.filter((f)=> f.coid !== e.coid)
+                    setcommet(filted)
+                    setoptions(false)
 
+                    const res = await DeleteComment({
+                      id: f.id,
+                      coid: e.coid
+                    })
+                    Update()
+                    // router.refresh()
+                  }} className='px-9 py-2 rounded-md hover:bg-red-700 duration-200'>Delete</button>
+                </div>
+                :
+                null}
+              </>
+             :
+             session.username == e.infomation.username ?
+              <>
+               <button className='text-xl cursor-pointer' onClick={()=> setoptions((pre)=> !pre)} >•••</button>
+                {options ?
+                <div className="my-6 bg-gray-600 absolute rounded-md">
+                  <button onClick={async ()=>{
+                    const filted = comment.filter((f)=> f.coid !== e.coid)
+                    setcommet(filted)
+                    setoptions(false)
 
+                    const res = await DeleteComment({
+                      id: f.id,
+                      coid: e.coid
+                    })
+                    rerender()
+                    // router.refresh()
+                  }} className='px-9 py-2 rounded-md hover:bg-red-700 duration-200'>Delete</button>
+                </div>
+                :
+                null}
+              </>
 
-      <div className='border-2 border-black rounded-md my-9 px-7 py-3 pb-8'>
-
-        <div className="flex justify-between">
-          <h1 className="text-2xl"><i className="fa-solid fa-user mr-2"></i>{comment.user} <span className='text-xl text-gray-600'>({comment.date})</span></h1>
-          <div>
-            {options ?
-              <div className="bg-white flex-col  items-center text-center [box-shadow:2px_2px_20px_black]  rounded-md absolute right-[50px] z-[1000] mt-7 flex">
-                <button onClick={async function() {
-                  // setload(<LoadingOPT on={true}/>)
-                  setLoad(true)
-                   await removecomment(id, comment.id)
-                   setLoad(false)
-                  //  setload(<></>)
-                }} className='rounded-md hover:bg-red-700 duration-500 px-6  py-3'><i className='fa-solid fa-trash mr-2'></i>Delete</button>
-              </div>
               :
               null
-            }
-            {(cookie.get("userid") == comment.uid ?
-              <button className='text-2xl hover:text-red-600 duration-500' onClick={function () {
-                setoptions(!options)
-              }}>•••</button>
-              :
-              null
-            )}
-          </div>
+            :
+            null
+
+          }
         </div>
-        <h1 className="text-lg">{comment.body}</h1>
+        <div className='flex gap-2 items-center'>
+          <img src={`/api/images/${e.infomation.img}`} width={40} className='rounded-full' alt="" />
+          <h1 className='hover:underline duration-150 hover:text-blue-600 cursor-pointer' onClick={() => router.push(`/@${e.infomation.username}`)}>@{e.infomation.username}</h1>
+        </div>
+        <h1 className='text-gray-600 my-1'>{e.date}</h1>
+        <h1 className="mb-5  text-xl">{e.body}</h1>
       </div>
-    <LoadingOPT on={Load}/>
     </>
   )
 }

@@ -1,104 +1,184 @@
 "use client"
-import React, { useState } from 'react'
-import Logo from './Logo'
-// import a from 'next/a'
-import { usePathname } from 'next/navigation'
-import allPaths from '@/lib/allPaths'
-import datauser from '@/lib/datauser'
-const Header = () => {
-    const [menu, setmenu] = useState(false)
-    const [animate, setanimate] = useState(false)
+import { usePathname, useRouter } from 'next/navigation'
+// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import React, { Suspense, useEffect, useState } from 'react'
+import Tabs from './Tabs'
+import { io, Socket } from 'socket.io-client'
+
+const More = ({ pathname, session, change }) => {
+  const link = [
+
+    {
+      path: "/posts/analytics",
+      title: "Analytics",
+      icon: "fa-chart-mixed"
+    }, {
+      path: "/public-message",
+      title: "Public Message",
+      icon: "fa-comment"
+    },
+    {
+      path: "/posts",
+      title: "Posts",
+      icon: "fa-plus",
+
+    },
+
+  ]
+
+  return (
+    <div popover={"auto"} className='flex z-10 w-full h-full bg-[#0000008a] justify-center items-center flex-col'>
+      <div className="text-white bg-gray-800 w-[300px] h-[400px] rounded-md p-7 text-2xl">
+        <i onClick={change} className="fa-solid fa-xmark text-start cursor-pointer"></i><br />
+        <div className="flex justify-center items-center my-1 flex-col gap-2">
+          {link.map((e) => {
+            return <Atag session={session} path={e.path} pathname={pathname} title={e.title} icon={e.icon} />
+          })}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+const A = ({ pathname, session, path, icon, title }: { pathname: string, path: string, icon: string, title: string, session: any }) => {
+  const active = pathname == path
+  const router = useRouter()
+  if (session.userid) {
+    if (title == "Login" || title == "Signup") {
+      return null
+    }
+  } else {
+    if (title == "Profile" || title == "Logout" || title == "Upload" || title == "Posts" || title == "Analytics") {
+      return null
+    }
+  }
+  if (active) {
     return (
-        <>
-            <div className='bg-[#b4b4b48f] backdrop-blur-lg w-full flex justify-between sticky top-0 z-10 px-9 py-3 items-center text-center' >
-                <div>
-                    <Logo />
-                </div>
-                <div>
-                    <ul className='gap-3 flex max-md:hidden'>
-                        <li>
-                            <a className='text-xl hover:text-blue-600 duration-500' href="/">Home</a>
-                        </li>
-                        <li>
-                            <a className='text-xl hover:text-blue-600 duration-500' href="/about">About</a>
-                        </li>
-                        <li>
-                            <a className='text-xl hover:text-blue-600 duration-500' href="/contact">Contact</a>
-                        </li>
-                        <li>
-                            <a className='text-xl hover:text-blue-600 duration-500' href="/blog">Blog</a>
-                        </li>
-                        {!datauser() ?
-                            <>
-                                <li>
-                                    <a className='text-xl hover:text-blue-600 duration-500' href="/login">Login</a>
-                                </li>
-                                <li>
-                                    <a className='text-xl hover:text-blue-600 duration-500' href="/signup">Signup</a>
-                                </li>
-                            </>
-                            :
-                            <>
-                                <li>
-                                    <a className='text-xl hover:text-blue-600 duration-500' href="/logout">Logout</a>
-                                </li>
-                                <li>
-                                    <a className='text-xl hover:text-blue-600 duration-500' href="/profile">Profile</a>
-                                </li>
-                            </>
-                        }
-                    </ul>
-                    <i onClick={() => setmenu(!menu)} className="fa-solid fa-bars cursor-pointer text-xl hover:text-blue-700 duration-300 hidden max-md:flex"></i>
-                </div>
-            </div>
-            {menu ?
-                <div popover='auto' className={`z-50 rounded-xl animate flex h-[99%] w-[99%] bg-[#b9b9b9b2] backdrop-blur-xl justify-center flex-col text-center items-center ${animate ? "animate2" : ''}`}>
-                    <i className="fa-solid fa-xmark cursor-pointer text-2xl hover:text-blue-700 duration-300 my-3" onClick={() => {
-                        setanimate(true)
-                        setTimeout(() => {
-                            setanimate(false)
-                            setmenu(false)
-                        }, 1000)
-                    }}></i>
-                    <ul>
-                        <li>
-                            <a className='text-2xl hover:text-blue-600 duration-500' href="/">Home</a>
-                        </li>
-                        <li>
-                            <a className='text-2xl hover:text-blue-600 duration-500' href="/about">About</a>
-                        </li>
-                        <li>
-                            <a className='text-2xl hover:text-blue-600 duration-500' href="/contact">Contact</a>
-                        </li>
-                        <li>
-                            <a className='text-2xl hover:text-blue-600 duration-500' href="/blog">Blog</a>
-                        </li>
-                        {!datauser() ?
-                            <>
-                                <li>
-                                    <a className='text-2xl hover:text-blue-600 duration-500' href="/login">Login</a>
-                                </li>
-                                <li>
-                                    <a className='text-2xl hover:text-blue-600 duration-500' href="/signup">Signup</a>
-                                </li>
-                            </>
-                            :
-                            <>
-                                <li>
-                                    <a className='text-xl hover:text-blue-600 duration-500' href="/logout">Logout</a>
-                                </li>
-                                <li>
-                                    <a className='text-xl hover:text-blue-600 duration-500' href="/profile">Profile</a>
-                                </li>
-                            </>
-                        }
-                    </ul>
-                </div>
-                :
-                null
-            }
-        </>
+      <span className={`${active ? "a-active" : "a"}  flex flex-col items-center text-center justify-center`}><i className={`fa-solid ${icon} `}></i>{title}</span>
     )
+  } else {
+    return (
+      <a href={path} onClick={(e)=>{
+        e.preventDefault()
+        router.push(path)
+      }} className={`${active ? "a-active" : "a"} flex flex-col items-center text-center justify-center`}><i className={`fa-solid ${icon} `}></i>{title}</a>
+    )
+  }
+}
+
+const Atag = ({ pathname, session, path, icon, title }: { pathname: string, path: string, icon: string, title: string, session: any }) => {
+  const active = pathname == path
+  const router = useRouter()
+  if (session.userid) {
+    if (title == "Login" || title == "Signup") {
+      return null
+    }
+  } else {
+    if (title == "Public Message" || title == "Profile" || title == "Logout" || title == "Upload" || title == "Posts" || title == "Analytics") {
+      return null
+    }
+  }
+  if (active) {
+    return (
+      <span className={`${active ? "a-active" : "a"}`}><i className={`fa-solid ${icon} mr-2`}></i>{title}</span>
+    )
+  } else {
+    return (
+      <a href={path} onClick={(e)=>{
+        e.preventDefault()
+        router.push(path)
+      }} className={`${active ? "a-active" : "a"}`}><i className={`fa-solid ${icon} mr-2`}></i>{title}</a>
+    )
+  }
+}
+
+const Header = ({ session, GetInfomation }: any) => {
+  const path = usePathname()
+  const router = useRouter()
+  const [socket, setsocket] = useState<Socket | null>()
+  useEffect(() => {
+    const SocketIO = io()
+    setsocket(SocketIO)
+    return () => {
+      SocketIO.emit("disconnect", 88858595959)
+    }
+  }, [])
+  const link = [
+    {
+      path: "/",
+      title: "Home",
+      icon: "fa-house"
+    },
+    {
+      path: "/profile",
+      title: "Profile",
+      icon: "fa-user",
+
+    },
+    {
+      path: "/upload",
+      title: "Upload",
+      icon: "fa-square-plus",
+
+    },
+
+
+    ,
+    {
+      path: "/login",
+      title: "Login",
+      icon: "fa-user",
+
+    },
+
+
+  ]
+  const [more, setmore] = useState(false)
+  return (
+    <>
+      <div className=' w-[20%] float-left sticky top-0 normal-border h-[100vh] max-lg:hidden'>
+        <div className="my-2 text-white px-3">
+          <img src="/logo.png" alt="Logo" width={180} height={100} className='img my-3' />
+          <div className="px-9 flex flex-col">
+            {link.map((e) => {
+              return <Atag session={session} path={e.path} pathname={path} title={e.title} icon={e.icon} />
+            })}
+            <a href='#open' className='hover:text-blue-700 duraiton-300' onClick={(e) => {
+              e.preventDefault()
+              setmore(true)
+            }}><i className="fa-solid fa-bars mr-2"></i>More Options</a>
+          </div>
+          {GetInfomation ?
+            <div className="border border-white rounded-md  flex-row-reverse py-2 px-5 items-center fixed bottom-0 w-[18%] right-0 left-0 m-2 flex justify-between">
+              <img onClick={() => {
+                router.push("/profile")
+              }} src={`/api/images/${GetInfomation.img}`} alt={GetInfomation.id} className=' cursor-pointer rounded-full' width={30} />
+              <h1 className='text-xl'>{GetInfomation.username}</h1>
+            </div>
+            :
+            null
+          }
+        </div>
+
+      </div>
+      <div className="max-lg:flex z-10 hidden fixed bottom-0 bg-gray-950 border-t gap-5 border-gray-700 w-full py-2 items-center justify-center">
+        {link.map((e) => {
+          return <A session={session} path={e.path} pathname={path} title={e.title} icon={e.icon} />
+        })}
+        <a href='#open' className='hover:text-blue-700 flex justify-center items-center text-center flex-col duraiton-300' onClick={(e) => {
+          // e.preventDefault()
+          setmore(true)
+        }}><i className="fa-solid fa-bars mr-2"></i>More Options</a>
+      </div>
+      {more ? <More change={function () {
+        setmore(false)
+      }} pathname={path} session={session} />
+        :
+        null
+      }
+      <Tabs />
+    </>
+  )
 }
 
 export default Header

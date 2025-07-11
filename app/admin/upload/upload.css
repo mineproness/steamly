@@ -1,8 +1,0 @@
-.input{
-    @apply bg-gray-300 px-8 py-3 rounded-lg focus:outline-none my-2 placeholder:text-gray-800; 
-}
-
-
-.button{
-    @apply bg-gray-500 duration-300 rounded-md hover:bg-red-700 px-8 py-2 
-}

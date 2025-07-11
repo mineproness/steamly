@@ -2,14 +2,17 @@
   "name": "gcoffer",
   "version": "0.1.0",
   "private": true,
+  "module": "commonjs",
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "npx ts-node server.ts",
     "build": "next build",
-    "start": "next start",
+    "start": "npx ts-node server.ts ",
     "lint": "next lint"
   },
   "dependencies": {
     "@fortawesome/react-fontawesome": "^0.2.2",
+    "@tailwindcss/typography": "^0.5.16",
+    "@types/js-cookie": "^3.0.6",
     "child_process": "^1.0.2",
     "js-cookie": "^3.0.5",
     "mongodb": "^6.16.0",
@@ -18,14 +21,20 @@
     "nodemailer": "^7.0.3",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-markdown": "^10.1.0",
     "react-toastify": "^11.0.5",
-    "tls": "^0.0.1"
+    "socket.io": "^4.8.1",
+    "socket.io-client": "^4.8.1",
+    "tls": "^0.0.1",
+    "ts-node": "^10.9.2",
+    "ws": "^8.18.2"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/ws": "^8.18.1",
     "autoprefixer": "^10.4.21",
     "eslint": "^9",
     "eslint-config-next": "15.3.2",
