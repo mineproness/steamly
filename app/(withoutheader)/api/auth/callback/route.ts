@@ -31,7 +31,9 @@ export async function GET(req: NextRequest) {
   const find = await db.collection("users").findOne({ id : Number(userres.id)})
   if(!find){
     const img = await fetch(userres.picture)
+      console.log("Image is converted")
     const base = await img.arrayBuffer()
+      console.log("again Converted")
     const base64 = Buffer.from(base).toString("base64")
       const imgid = await fetch(`${process.env.BASE_URL!}/api/upload` , {
         method: "POST",
